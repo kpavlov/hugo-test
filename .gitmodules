@@ -1,0 +1,3 @@
+[submodule "themes/ghostium"]
+	path = themes/ghostium
+	url = git@github.com:kpavlov/hugo-ghostium-theme.git

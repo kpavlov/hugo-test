@@ -1,0 +1,30 @@
+language: go
+go:
+  - 1.6
+
+branches:
+  only:
+  - source
+
+sudo: false
+
+install:
+  - go get github.com/spf13/hugo
+
+before_script:
+- git config --global user.name 'Travis CI on behalf of Konstantin Pavlov'
+- git config --global user.email 'git@konstantinpavlov.net'
+
+script:
+  - hugo
+
+after_success:
+- mkdir .deploy
+- cd .deploy
+- git clone --depth 1 --branch master --single-branch $DEPLOY_REPO . || (git init && git remote add -t master origin $DEPLOY_REPO)
+- rm -rf ./*
+- cp -r ../public/* .
+- git add -A .
+- git commit -m 'Site updated'
+- git branch -m master
+- git push -q -u origin master
