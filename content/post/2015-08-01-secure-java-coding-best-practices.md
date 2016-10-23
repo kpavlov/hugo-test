@@ -28,7 +28,7 @@ In this article I will briefly describe common practical development techniques 
  * A10 - Unvalidated Redirects and Forwards
 
 In this article I will highlight most important java coding techniques for building secure web applications.
-
+<!--more-->
 ## Use SQL Prepared Statements ([A1][a1])
 
 Bind user data to request parameters of the `PreparedStatement`. Never construct dynamic sql queries directly, without escaping parameter escaping.  
@@ -100,10 +100,12 @@ Data access (SQL) usually requires correctly constructing of the SQL query.
 
 Use browser headers to prevent XSS and data-injection attacks:
 
-* `X-Frame-Options: DENY`
-* `X-XSS-Protection: 1; mode=block`
-* `X-Content-Type-Options: nosniff`
-* `Content-Security-Policy: default-src https://myhost.com`
+```http
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+Content-Security-Policy: default-src https://myhost.com
+```
 
 Spring-Security provides a set of [header filters](http://docs.spring.io/autorepo/docs/spring-security/current/apidocs/org/springframework/security/config/annotation/web/builders/HttpSecurity.html) out of the box ():
 
