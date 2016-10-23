@@ -8,7 +8,7 @@ paginate = 10
 # Build robots.txt file
 enableRobotsTXT = true
 
-theme = "ghostium"
+theme = "hugo-theme-ghostium"
 
 [author]
   name = "Konstantin Pavlov"
@@ -35,15 +35,15 @@ subscribe_rss = "/index.xml"
 disqus_short_name = "konstantinpavlov"
 
 # google analytics
-google_analytics_tracking_id = "UA-2530248-1"
+googleAnalytics = "UA-2530248-1"
 
 # Enable Pjax for asynchronous (AJAX) content loading
-enable_pjax = false
+enable_pjax = true
 
 # social links
 facebook_user = ""
 googleplus_user = ""
-twitter_user = ""
+twitter_user = "k_pavlov"
 github_user = "kpavlov"
 #instagram_user = ""
 linkedin_user = "kpavlov"
