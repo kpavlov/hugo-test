@@ -8,7 +8,7 @@ categories:
   - programming
 ---
 
-Selenide is nice wrapper around selenium web driver allowing to simplify writting UI tests with Selenium.
+[Selenide](http://selenide.org) is nice wrapper around selenium web driver allowing to simplify writting UI tests with Selenium.
 
 Some of the cook features are:
 
@@ -19,9 +19,9 @@ Some of the cook features are:
 
 So, let's write some tests on selenide and make it run from maven in a normal browser or in headless mode.<!--more-->
 
-First, let's create [`pom.xml`](https://raw.githubusercontent.com/kpavlov/selenide-maven-sample/master/pom.xml):
+First, let's create [_pom.xml_](https://raw.githubusercontent.com/kpavlov/selenide-maven-sample/master/pom.xml):
 
-```xml pom.xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -158,5 +158,5 @@ Also there are a fistful of profiles to use as a shortcuts, e.g.
 * `mvn clean test -Pphantomjs` -- run tests locally with phantomjs headless browser. Requires phantomjs to be installed
 * `mvn clean test -Pfirefox,local` -- run tests locally with Firefox and leaves a browser open after tests
 * `mvn clean test -Pci-server,chrome` -- run tests on selenium hub with Chrome
- 
+
 You may find working example in my [GitHub repository](https://github.com/kpavlov/selenide-maven-sample).
