@@ -10,20 +10,26 @@ enableRobotsTXT = true
 
 theme = "hugo-theme-ghostium"
 
+enableEmoji = true
+#pygmentsCodeFencesGuessSyntax = true
+
 [author]
-  name = "Konstantin Pavlov"
-  avatar = "/img/avatar-128.png"
+name = "Konstantin Pavlov"
+avatar = "/img/avatar-128.png"
 
 [taxonomies]
-  category = "categories"
-  tag = "tags"
+category = "categories"
+tag = "tags"
 
 [blackfriday]
-  angledQuotes = true
+angledQuotes = true
+#hrefTargetBlank = true
+sourceRelativeLinksEval = true
+extensions = ["hardLineBreak","autoHeaderIds"]
 
 [params]
 # site description, will show under navigation
-  description = "Thoughts on Software Development"
+description = "Thoughts on Software Development"
 
 # site cover image url
 cover = "/img/cover.jpg"
@@ -38,7 +44,7 @@ disqus_short_name = "konstantinpavlov"
 googleAnalytics = "UA-2530248-1"
 
 # Enable Pjax for asynchronous (AJAX) content loading
-enable_pjax = true
+enable_pjax = false
 
 # social links
 facebook_user = ""
