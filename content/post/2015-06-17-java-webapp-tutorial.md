@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "Java Web Application Tutorial"
+title: "Java Application Development Tutorial"
 date: 2015-06-17T09:55:16
-updated: 2015-06-19T18:13:32
+updated: 2016-10-27T18:13:32
 featured: true
 categories:
   - programming
@@ -15,40 +15,59 @@ tags:
 I've been meaning to write a small tutorial for building web applications. Now it's time!
 Let's define the steps and choose some solutions for developing back-end java web application.
 
-I will give my design recommendations and list a technologies I would use. You may have your own opinion and you may share it in comment. Over time, this post may change since my favourites are also changing over time.
-<!-- more -->
+I will give my design recommendations and list a technologies I would use. You may have your own opinion and you may share it in comment. Over time, this post may change since my favourites are also changing over time.<!--more-->
+
+
 ## Technologies Stack
 
 ### Server-Side Stack
 
 1. Use latest stable JDK. Now it is Java 8.
+
 2. Use lightweight web container, e.g. Jetty or Tomcat.
-3. Use Spring stack instead of J2EE. It is more customizable and extensible.
-4. Use embedded web server if possible. Package your application as self-executing JARs instead of WARs and run them with `java -jar app.jar`. Thus you will never depend on application server infrastructure managed by IT team. Manage your infrastructure yourself!
-5. Use Spring Boot - it offers convention over configuration and many predefined `@Configuration`s.
+
+3. Use Spring stack instead of J2EE. It is more customizable and extensible. [Spring Boot][spring-boot] is a default choice.
+
+4. Use embedded web server if possible. [Spring Boot Maven Plugin][spring-boot-maven-plugin] allows you easily repackage all your jars into single jar or war file.
+
+5. Package your application as self-executing JARs instead of WARs and run them with `./app.jar`. Thus you will never depend on application server infrastructure managed by IT team. Manage your infrastructure yourself!
+
+6. Use Spring Boot - it offers convention over configuration and many predefined `@Configuration`s.
+
 6. Prefer Java-based Spring Configurations over XML-based. Java offers more restrictive type checking and visibility control.
+
 7. Use Spring Transaction Management (spring-tx) with `@Transactional`. Don't set `autoCommit="true"`. It is more flexible.
+
 8. Prefer [Jackson][jackson] with [Jackson XML][jackson-xml] + [Woodstox][woodstox] over JAXB, it's faster and more convenient. jackson-dataformat-xml offers support for JAXB annotations but you are not forced to use JAXB for marshalling.
+
 9. Use mocks (Mockito) and spring-test for unit testing. Prefer singletons over statics and you'll not need a PowerMockito.
+
 10. Use maven. I don't see any significant advantage of using Gradle in terms of performance. Project should be simple in structure and fast to build, so maven is still performs well.
 
 ### Front-End Stack
 
-Use **professional** front-end frameworks and tools like AngularJS, Bower, SASS and Gulp. You're developing a high quality product and you should use proven solutions for front-end. Professional front-end developers do use this tools so you should not [re-invent the wheel][DRY].
+1. Use **professional** front-end frameworks and tools like React, AngularJS, SASS, Npm and Gulp. You're developing a high quality product and you should use proven solutions for front-end. Professional front-end developers do use this tools so you should not [re-invent the wheel][DRY].
 [WebJars][webjars] is also a good solution if your application is simple enough.
 
-1. Design your application to consume REST API
-2. Use AngularJS, Bower, SASS and Gulp.
+2. Design your JS application to consume REST API
+
+3. Design your server to be expose REST API.
 
 ## Design Order
 
 Start from presentation layer and go down on the controllers and services layers.
-You may start designing the database structure in parallel, but you will know the API interfaces for sure when you'll finish with the presentation and API.
+
+Avoid starting with database schema design unless you know your business domain in depth.
+Your interface (web or api) will dictate required data structure, so persistence layer interfaces will evolve in the future. You may minimize changes by introducing API level in the database, i.e. use views and stored procedures to fix the contract between DBMS and application.
+
+**It's IMPORTANT: Delay making of important architectural solutions as much as possible!**
+Making decision earlier may catch you in a trap of technologies and tools not suited well for solving your problem. But that knowledge came to yo too late. Typical example: you may have chosen RDBMS but now, when a project is nearly completed, NoSql storage seems to be better fit for your problem.
 
 ## Building Front-End
 
-1. Create a test data (JSON files) to be used when developing front-end application.
-2. Create separate controllers for creating and editing entities. Data models and validation rules are often different: in create mode you have less fields in the model. Also, edit controller will be simpler if you'll have some immutable fields in the model.
+1. Start with UI without real data. Then create a test data (JSON files) and use simple nodejs http server to serve it together with other assets. When your data requirements are defined, start implementing service API. This approach saves a lot of time: You don't have to change both server and client when design has eventually changed. 
+
+2. Create separate controllers for creating and amending your entities. Data models and validation rules are often different. Most likely you will have significantly different models. Also, edit controllers will be simpler if you'll have less mutable fields in the model.
 
 ## Building Server-Side
 
@@ -95,32 +114,31 @@ Someone may argue: why not to manage transactions in controllers (presentation l
 1. Perform access-control validation in this layer. Same services may be invoked from different controllers (e.g. html and REST ones) so you'll use the same logic.
 2. Use `@Transactional` to annotate service classes and methods. Transactions are aged here. If you need a complex transaction management then use a `TransactionTemplate`.
 3. Don't access `DataSource` or `JdbcTemplate` in this layer. Use DAOs instead.
-4. When you call a transactional method from non-transactional one in the same spring bean use `self` reference:
+4. When you call a `@Transactional` method from non-transactional one in the same spring bean use `self`-reference:
 
-```java MyService.java
-@Service
-public MyServiceImpl implements MyService {
-
-    @Autowired
-    MyDao dao;
-
-    @Autowired
-    private MyServiceImpl self;
-
-    @Override
-    public void nonTxMethod() {
-        self.txMethod(); // "self" is a proxy with transactional aspect support
+    ```java
+    @Service
+    public MyServiceImpl implements MyService {
+    
+        @Autowired
+        private MyDao dao;
+    
+        @Autowired
+        private MyServiceImpl self;
+    
+        @Override
+        public void nonTxMethod() {
+            self.txMethod(); // "self" is a proxy with transactional aspect support
+        }
+    
+        @Override
+        @Transactional
+        public void txMethod() {
+             dao.load(...);
+             ...
+        }
     }
-
-    @Override
-    @Transactional
-    public void txMethod() {
-         dao.load(...);
-         ...
-    }
-
-}
-```
+    ```
 
 ### Data Access Layer
 
@@ -148,6 +166,8 @@ In modern event-driven architecture message processing is important for integrat
 [jackson]: http://wiki.fasterxml.com/JacksonHome
 [jackson-xml]: https://github.com/FasterXML/jackson-dataformat-xml  "Extension for Jackson JSON processor that adds support for serializing POJOs as XML"
 [spring]: http://projects.spring.io/spring-framework/
+[spring-boot]: http://projects.spring.io/spring-boot/
+[spring-boot-maven-plugin]: https://spring.io/guides/gs/spring-boot/
 [spring-web-mvc]: http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html
 [spring-webflow]: http://projects.spring.io/spring-webflow/ "Spring Web Flow allows implementing the step-by step flows or wizards in web application."
 [spring-security]: http://projects.spring.io/spring-security/ "Spring Security is a powerful and highly customizable authentication and access-control framework."
